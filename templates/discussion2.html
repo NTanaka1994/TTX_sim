@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ incident | safe }}</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <style>
+        .header {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .logo {
+            font-weight: 700;
+            padding-left: 14px;
+        }
+        .hamburger-menu {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            border: none;
+            background: transparent;
+            appearance: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .hamburger-menu__bar {
+            display: inline-block;
+            width: 44%;
+            height: 2px;
+            background: #242424;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: .5s;
+        }
+        .hamburger-menu__bar:first-child {
+            top: 16px;
+        }
+        .hamburger-menu__bar:nth-child(2) {
+            top: 24px;
+        }
+        .hamburger-menu__bar:last-child {
+            top: 32px;
+        }
+        .hamburger-menu--open .hamburger-menu__bar {
+            top: 50%;
+        }
+        .hamburger-menu--open .hamburger-menu__bar:first-child {
+            transform: translateX(-50%) translateY(-50%) rotate(45deg);
+        }
+        .hamburger-menu--open .hamburger-menu__bar:last-child {
+            transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+        }
+        .hamburger-menu--open .hamburger-menu__bar:nth-child(2) {
+            display: none;
+        }
+        .navigation {
+            display: none;           /* ← slideToggleで表示/非表示 */
+            background: #242424;
+            width: 100%;
+        }
+        .navigation__inner {
+            padding: 16px;
+            color: #fff;
+        }
+        .navigation__inner table td {
+            padding: 4px 8px;
+        }
+
+        /* チャット表示部分を少しだけ見やすく */
+        #chat-area {
+            margin-top: 16px;
+        }
+        #log {
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#js-hamburger-menu').on('click', function () {
+                $('.navigation').slideToggle(500);
+                $('.hamburger-menu').toggleClass('hamburger-menu--open');
+            });
+        });
+        function jump(){
+            const role2 = document.getElementById("role2").value;
+            const num   = document.getElementById("num").value;
+            if (role2 && num){
+                // ここは元の実装に合わせてパス調整
+                location.href = "/discussion/" + num + "/" + role2;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- ヘッダー：ロゴ + ハンバーガーだけ -->
+    <header class="header">
+        <div class="logo">LOGO</div>
+        <button class="hamburger-menu" id="js-hamburger-menu">
+            <span class="hamburger-menu__bar"></span>
+            <span class="hamburger-menu__bar"></span>
+            <span class="hamburger-menu__bar"></span>
+        </button>
+    </header>
+
+    <!-- ハンバーガーメニューの中身：役割・インシデント番号・ボタン -->
+    <div class="navigation">
+        <div class="navigation__inner">
+            <table>
+                <tr>
+                    <td>役割</td>
+                    <td><input type="text" name="role2" id="role2"></td>
+                </tr>
+                <tr>
+                    <td>インシデント番号</td>
+                    <td><input type="number" name="num" id="num"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="right">
+                        <input type="button" onclick="jump()" value="演習">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ここから下が「メニューの下」に来る WebSocket 会話エリア -->
+    <a href="../../../logout">ホームへ戻る</a>
+    <h1>{{ incident | safe }}</h1>
+
+    <div id="chat-area">
+        <table>
+            <tr>
+                <td>{{ role | safe }}></td>
+                <td>
+                    <input id="msgbox" placeholder="message">
+                    <button onclick="send()">送信</button>
+                </td>
+            </tr>
+        </table>
+
+        <div id="log">{{ chat | safe }}</div>
+    </div>
+
+    <script>
+        const socket = io();
+        const room = "{{ incident | safe }}";
+        const user = "{{ role | safe }}";
+
+        socket.emit("join", {room : room, user : user});
+
+        socket.on("chat", data => {
+            const log = document.getElementById("log");
+            log.innerHTML += data.msg + "<br>";
+            log.scrollTop = log.scrollHeight;
+        });
+
+        function send(){
+            let text = document.getElementById("msgbox").value;
+            socket.emit("message", {
+                room : room,
+                user : user,
+                msg : text
+            });
+            document.getElementById("msgbox").value = "";
+        }
+    </script>
+</body>
+</html>
