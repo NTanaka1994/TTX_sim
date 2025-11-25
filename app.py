@@ -8,7 +8,7 @@ import html
 import json
 
 app = Flask("__name__")
-app.config['SECRET_KEY'] = 'secret!'
+app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app)
 app.permanent_session_lifetime = timedelta(minutes=1800)
 f = open("API_key.txt", "r", encoding="utf-8")
