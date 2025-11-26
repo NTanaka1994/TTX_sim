@@ -35,7 +35,15 @@ def discussion(incident_num, role):
     for user, text in cur:
         res += html.escape(user) + ": " + html.escape(text) + "<br>"
     con.close()
-    return render_template("discussion.html", incident=html.escape(incident_num), role=html.escape(role), chat=res)
+    con = sqlite3.connect("TTX.db")
+    jsn = ""
+    cur = con.cursor()
+    cur.execute("SELECT json FROM incident WHERE id=?", (incident_num,))
+    for row in cur:
+        jsn = row[0]
+    dic = json.loads(jsn)
+    con.close()
+    return render_template("discussion.html", incident_num=incident_num, incident=html.escape(dic["name"]), des=html.escape(dic["description"]), role=html.escape(role), chat=res)
 
 @app.route("/judge/<incident_num>", methods=["POST"])
 def judge(incident_num):
@@ -46,8 +54,17 @@ def judge(incident_num):
     cur.execute("SELECT time, user, comment FROM chat WHERE id=?",(incident_num,))
     chat += "会話記録\n"
     for time, user, comment in cur:
-        chat += "時刻 : " + html.escape(str(time)) +html.escape(user) + " : " + html.escape(comment) + "\n"
+        chat += "時刻 : " + html.escape(str(time)) + "\t" +html.escape(user) + " \t: " + html.escape(comment) + "\n"
     res = chat + "\n" + "対応 : " + html.escape(result)
+    con.close()
+    con = sqlite3.connect("TTX.db")
+    jsn = ""
+    cur = con.cursor()
+    cur.execute("SELECT json FROM incident WHERE id=?", (incident_num,))
+    for row in cur:
+        jsn = row[0]
+    print(jsn)
+    dic2 = json.loads(jsn)
     con.close()
     client = OpenAI(api_key=key)
     prompt = f"""
@@ -55,7 +72,7 @@ def judge(incident_num):
     次のインシデント対応とその過程の議事録について100点満点で採点してください。
     
     # インシデント内容
-    ランサムウェア
+    {dic2['name']}
     
     # 採点基準
     1. 技術的妥当性(40点)
@@ -84,7 +101,7 @@ def judge(incident_num):
     cur.execute("DELETE FROM chat WHERE id=?",(incident_num,))
     con.commit()
     con.close()
-    return render_template("judge.html", res=res, incident=incident_num)
+    return render_template("judge.html", res=res, incident=html.escape(dic2["name"]), des=html.escape(dic2["description"]))
 
 @app.route("/logout")
 def logout():

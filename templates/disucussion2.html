@@ -151,7 +151,6 @@
         <!-- メニューの下にチャット -->
         <a href="../../../logout">ホームへ戻る</a>
         <h1>{{ incident | safe }}</h1>
-        <p>{{ des | safe }}</p>
         <div id="chat-area">
             <table>
                 <tr>
@@ -161,12 +160,18 @@
                         <button onclick="send()">送信</button>
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">最終判断を入力してください</td>
+                </tr>
+                <tr><form action="../../../judge/{{ incident | safe }}" method="POST">
+                    <td><input type="text" name="result"></td><td><input type="submit" value="送信"></td>
+                </tr></table>
             </table>
             <div id="log">{{ chat | safe }}</div>
         </div>
         <script>
             const socket = io();
-            const room = "{{ incident_num | safe }}";
+            const room = "{{ incident | safe }}";
             const user = "{{ role | safe }}";
             socket.emit("join", {room : room, user : user});
             socket.on("chat", data => {
@@ -184,9 +189,11 @@
                 document.getElementById("msgbox").value = "";
             }
         </script>
-        <form action="../../../judge/{{ incident_num | safe }}" method="POST">
+        <!--
+        <form action="../../../judge/{{ incident | safe }}" method="POST">
             <p>最終的な行動を入力してください</p>
-            <input type="text" name="result"></td><td><input type="submit" value="送信">
+            
         </form>
+    -->
     </body>
 </html>
