@@ -63,7 +63,6 @@ def judge(incident_num):
     cur.execute("SELECT json FROM incident WHERE id=?", (incident_num,))
     for row in cur:
         jsn = row[0]
-    print(jsn)
     dic2 = json.loads(jsn)
     con.close()
     client = OpenAI(api_key=key)
@@ -126,4 +125,5 @@ def on_message(data):
     emit("chat", {"msg" : f"{data['user']}: {data['msg']}"}, room=data["room"])
 
 if __name__ == "__main__":
+
     socketio.run(app, port=80, host="0.0.0.0", allow_unsafe_werkzeug=True)
