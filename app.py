@@ -125,5 +125,4 @@ def on_message(data):
     emit("chat", {"msg" : f"{data['user']}: {data['msg']}"}, room=data["room"])
 
 if __name__ == "__main__":
-
     socketio.run(app, port=80, host="0.0.0.0", allow_unsafe_werkzeug=True)
