@@ -3,8 +3,6 @@
     <head>
         <meta charset="utf-8">
         <title>{{ incident | safe }}</title>
-
-        <!-- WebSocket / jQuery -->
         <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
 
@@ -12,7 +10,7 @@
             .header {
                 height: 50px;
                 display: flex;
-                justify-content: flex-start;   /* 左寄せ */
+                justify-content: flex-start;
                 align-items: center;
                 border-bottom: 1px solid #ddd;
             }
@@ -64,7 +62,6 @@
                 display: none;
             }
 
-            /* メニュー本体 */
             .navigation {
                 display: none;
                 background: #242424;
@@ -82,7 +79,6 @@
                 width: 140px;
             }
 
-            /* チャット領域 */
             #chat-area {
                 margin-top: 16px;
             }
@@ -97,7 +93,6 @@
         </style>
 
         <script>
-            /* ハンバーガーメニュー操作 */
             $(function () {
                 $('#js-hamburger-menu').on('click', function () {
                     $('.navigation').slideToggle(500);
@@ -105,7 +100,6 @@
                 });
             });
 
-            /* 入力後ジャンプ */
             function jump(){
                 const role2 = document.getElementById("role2").value;
                 const num   = document.getElementById("num").value;
@@ -117,7 +111,6 @@
     </head>
     <body>
 
-        <!-- ヘッダー -->
         <header class="header">
             <button class="hamburger-menu" id="js-hamburger-menu">
                 <span class="hamburger-menu__bar"></span>
@@ -127,7 +120,6 @@
             <div class="logo">他の演習メニュー</div>
         </header>
 
-        <!-- ハンバーガーメニュー中身 -->
         <nav class="navigation">
             <div class="navigation__inner">
                 <table>
@@ -147,8 +139,6 @@
                 </table>
             </div>
         </nav>
-
-        <!-- メニューの下にチャット -->
         <a href="../../../logout">ホームへ戻る</a>
         <h1>{{ incident | safe }}</h1>
         <p>{{ des | safe }}</p>
@@ -186,7 +176,7 @@
         </script>
         <form action="../../../judge/{{ incident_num | safe }}" method="POST">
             <p>最終的な行動を入力してください</p>
-            <input type="text" name="result"></td><td><input type="submit" value="送信">
+            <input type="text" name="result"><input type="submit" value="送信">
         </form>
     </body>
 </html>
