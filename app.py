@@ -93,7 +93,14 @@ def judge(incident_num):
     """
     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role":"user","content":prompt}])
     mes = response.choices[0].message.content
-    dic = json.loads(mes)
+    try:
+        dic = json.loads(mes)
+    except:
+        mes = mes.replace("```json", "")
+        mes = mes.replace("\n```", "")
+        print(mes)
+        dic = json.loads(mes)
+        
     res = "<h2>点数</h2>" + str(dic["score"]) + "点\n<h2>理由</h2>" + html.escape(dic["reason"]).replace("。", "。\n") + "\n<h2>アドバイス</h2>\n" + html.escape(dic["advice"]).replace("。", "。\n") + "\n以下議事録と最終決定" + res
     con = sqlite3.connect("TTX.db")
     cur = con.cursor()
