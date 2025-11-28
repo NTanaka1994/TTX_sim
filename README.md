@@ -12,12 +12,23 @@ incident
 id, json(JSON-LD形式)
 </pre>
 
-演習選択画面
+## 演習選択画面
+<pre>
+  最初の人は役職を入力してランダム演習を押下してください。
+  二番目以降の人は最初に入った人のURLから番号を確認してインシデント番号と役職を入力してボタンを押下し演習画面に入ってください。
+</pre>
 <img width="905" height="511" alt="image" src="https://github.com/user-attachments/assets/717789c9-0fe7-4065-9075-542bf4d72c8d" />
 
-演習画面
+## 演習画面
+<pre>
+  あなたはCSIRTの一員として発生したインシデントを確認(h1タグのタイトル)しチャットで議論してください。
+  そしてチャットで議論し終え、最終的な動きを共有でき次第、チャットに入っている誰か一人が画面一番下のテキストボックスを入力してボタンを押してください。
+</pre>
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/01c9058f-e03d-466d-9af6-f7bb5d00b45f" />
 
-最終的な採点はこんな感じ
+## 最終的な採点はこんな感じ
+<pre>
+　レポートが出力されます。採点はOpenAIのGPT-4o-miniを使っています。
+</pre>
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/3d96c5fa-2d35-4cbf-94a1-67bf2ff8e675" />
 
