@@ -33,3 +33,4 @@ id, json(JSON-LD形式)
 </pre>
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/3d96c5fa-2d35-4cbf-94a1-67bf2ff8e675" />
 
+※英語版作ってくれる人、お願いします！(当方英語めちゃくちゃ苦手)
