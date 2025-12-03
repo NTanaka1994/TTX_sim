@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ホーム</title>
+        <script>
+            function getRandomInt(max) {
+                num = String(Math.floor(Math.random() * max));
+                if(document.getElementById("role1").value === ""){
+                    document.getElementById("alert").innerHTML = "<font color=\"#FF0000\">※役職を入力してください※</font>"
+                }
+                else{
+                    window.location.href = "discussion/" + num + "/" + document.getElementById("role1").value;
+                }
+            }
+            function jump(){
+                num = document.getElementById("num").value;
+                role = document.getElementById("role2").value;
+                if(isNaN(num) || num === ""){
+                    document.getElementById("alert").innerHTML = "<font color=\"#FF0000\">※数字を入力してください※</font>"
+                }
+                else{
+                    if(role === ""){
+                        document.getElementById("alert").innerHTML = "<font color=\"#FF0000\">※役職を入力してください※</font>"
+                    }
+                    else{
+                        window.location.href = "discussion/" + num + "/" + role;
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>机上演習サービス</h1>
+        <p>役割を入力してボタンを押してください</p>
+        <div id="alert"></div>
+        <table>
+            <tr>
+                <td>名前</td>
+                <td><input type="text" name="role" id="role1"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    <input type="button" onclick="getRandomInt(10)" value="ランダム演習">
+                </td>
+            </tr>
+        </table>
+        <p>インシデント番号が決まっている場合はこちらを入力してボタンを押してください</p>
+        <table>
+            <tr>
+                <td>名前</td>
+                <td><input type="text" name="role2" id="role2"></td>
+            </tr>
+            <tr>
+                <td>インシデント番号</td>
+                <td><input type="number" name="num" id="num" min="0" max="9"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    <input type="button" onclick="jump()" value="演習">
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
