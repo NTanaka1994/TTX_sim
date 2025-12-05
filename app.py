@@ -30,7 +30,6 @@ def discussion(incident_num, name):
     tmp = []
     for row in cur:
         tmp.append(row[0])
-    print(len(tmp))
     if "role" not in session:
         if len(tmp) == 0:
             session["role"] = "manager"
@@ -66,7 +65,8 @@ def discussion(incident_num, name):
 @app.route("/judge/<incident_num>", methods=["POST"])
 def judge(incident_num):
     if "num" not in session:
-        session["num"] = 1
+        session["num"] = {incident_num : 1}
+        session.modified = True
         name = request.form["name"]
         result = request.form["result"]
         chat = ""
@@ -122,8 +122,67 @@ def judge(incident_num):
         con.commit()
         con.close()
         return redirect("../../discussion/"+ incident_num + "/" + name)
-    if session["num"] < 3:
-        session["num"] += 1
+    elif incident_num not in session["num"]:
+        session["num"][incident_num] = 1
+        session.modified = True
+        name = request.form["name"]
+        result = request.form["result"]
+        chat = ""
+        con = sqlite3.connect("TTX.db")
+        cur = con.cursor()
+        cur.execute("SELECT time, user, comment FROM chat WHERE id=?",(incident_num,))
+        chat += "会話記録\n"
+        for time, user, comment in cur:
+            chat += "時刻 : " + html.escape(str(time)) + "\t" +html.escape(user) + " \t: " + html.escape(comment) + "\n"
+        res = chat + "\n" + "対応 : " + html.escape(result)
+        con.close()
+        con = sqlite3.connect("TTX.db")
+        jsn = ""
+        cur = con.cursor()
+        cur.execute("SELECT json FROM incident WHERE id=?", (incident_num,))
+        for row in cur:
+            jsn = row[0]
+        dic2 = json.loads(jsn)
+        con.close()
+        client = OpenAI(api_key=key)
+        prompt = f"""
+        あなたはサイバー攻撃の専門家です。
+        次のインシデント対応とその過程から次の攻撃内容を記載してください。
+        
+        # インシデント内容
+        {dic2['name']}
+                
+        # チーム内での会話議事録
+        {chat}
+        
+        # 対応
+        {result}
+        
+        出力形式は次のJSONとしてください。
+        {{
+            "next" : "次の攻撃内容",
+        }}
+        """
+        response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role":"user","content":prompt}])
+        mes = response.choices[0].message.content
+        try:
+            dic = json.loads(mes)
+        except:
+            mes = mes.replace("```json", "")
+            mes = mes.replace("\n```", "")
+            print(mes)
+            dic = json.loads(mes)
+        now = datetime.now()
+        now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+        con = sqlite3.connect("TTX.db")
+        cur = con.cursor()
+        cur.execute("INSERT INTO chat (id, user, comment, time) VALUES (?, ?, ?, ?)", (incident_num, "redteam", dic["next"], now_str))
+        con.commit()
+        con.close()
+        return redirect("../../discussion/"+ incident_num + "/" + name)
+    elif session["num"][incident_num] < 3:
+        session["num"][incident_num] = session["num"][incident_num] + 1
+        session.modified = True
         name = request.form["name"]
         result = request.form["result"]
         chat = ""
@@ -169,7 +228,6 @@ def judge(incident_num):
         except:
             mes = mes.replace("```json", "")
             mes = mes.replace("\n```", "")
-            print(mes)
             dic = json.loads(mes)
         now = datetime.now()
         now_str = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -179,7 +237,7 @@ def judge(incident_num):
         con.commit()
         con.close()
         return redirect("../../discussion/"+incident_num+"/"+name)
-    elif session["num"] == 3:
+    elif session["num"][incident_num] >= 3:
         result = request.form["result"]
         chat = ""
         con = sqlite3.connect("TTX.db")
@@ -231,7 +289,6 @@ def judge(incident_num):
         except:
             mes = mes.replace("```json", "")
             mes = mes.replace("\n```", "")
-            print(mes)
             dic = json.loads(mes)  
         res = "<h2>点数</h2>" + str(dic["score"]) + "点\n<h2>理由</h2>" + html.escape(dic["reason"]).replace("。", "。\n") + "\n<h2>アドバイス</h2>\n" + html.escape(dic["advice"]).replace("。", "。\n") + "\n以下議事録と最終決定" + res
         con = sqlite3.connect("TTX.db")
