@@ -3,7 +3,7 @@
 <pre>
 このリポジトリをクローンしてください。
 「API_key.txt」を作りOpenAIからAPIキーを取得してAPI_key.txtに保存してください。
-  app_ver2.pyを起動して下さい。
+  app.pyを起動して下さい。
 使用するライブラリはFlask、Flask-socketio、OpenAI、SQLite3
 データベーステーブルは
 chat
